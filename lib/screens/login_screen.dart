@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_line_clone/components/rounded_button.dart';
 import 'package:flutter_line_clone/constants.dart';
 import 'package:flutter_line_clone/screens/chat_screen.dart';
+import 'package:flutter_line_clone/screens/room_list_screen.dart';
 import 'package:modal_progress_hud/modal_progress_hud.dart';
 
 
@@ -44,6 +45,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 height: 48.0,
               ),
               TextField(
+                textAlign: TextAlign.center,
                 onChanged: (value) {
                   email = value;
                 },
@@ -54,6 +56,8 @@ class _LoginScreenState extends State<LoginScreen> {
                 height: 8.0,
               ),
               TextField(
+                textAlign: TextAlign.center,
+                obscureText: true,
                 onChanged: (value) {
                   password = value;
                 },
@@ -74,7 +78,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     final user = await _auth.signInWithEmailAndPassword(
                         email: email, password: password);
                     if (user != null) {
-                      Navigator.pushNamed(context, ChatScreen.id);
+                      Navigator.pushNamed(context, RoomListScreen.id);
                     }
                     setState(() {
                       showSpinner = false;

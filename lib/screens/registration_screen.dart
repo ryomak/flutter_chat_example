@@ -1,8 +1,10 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_line_clone/components/rounded_button.dart';
 import 'package:flutter_line_clone/constants.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter_line_clone/screens/chat_screen.dart';
+import 'package:flutter_line_clone/screens/init_screen.dart';
+import 'package:flutter_line_clone/screens/room_list_screen.dart';
 import 'package:modal_progress_hud/modal_progress_hud.dart';
 
 class RegistrationScreen extends StatefulWidget {
@@ -13,8 +15,10 @@ class RegistrationScreen extends StatefulWidget {
 
 class _RegistrationScreenState extends State<RegistrationScreen> {
   final _auth = FirebaseAuth.instance;
+  final _firestore = Firestore.instance;
   bool showSpinner = false;
   String email;
+  String name;
   String password;
 
   @override
@@ -34,6 +38,18 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                 child: Container(
                   height: 200.0,
                   child: Image.asset('images/logo.png'),
+                ),
+              ),
+              SizedBox(
+                height: 48.0,
+              ),
+              TextField(
+                textAlign: TextAlign.center,
+                onChanged: (value) {
+                  name = value;
+                },
+                decoration: kTextFieldDecoration.copyWith(
+                    hintText: 'Enter your name'
                 ),
               ),
               SizedBox(
@@ -76,12 +92,19 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                     final newUser = await _auth.createUserWithEmailAndPassword(
                         email: email, password: password
                     );
-                    if (newUser != null) {
-                      Navigator.pushNamed(context, ChatScreen.id);
-                    }
                     setState(() {
                       showSpinner = false;
                     });
+                    if (newUser != null) {
+                      await _firestore.collection('users')
+                          .document(newUser.uid).setData({
+                        'mail': email,
+                        'name': name,
+                      });
+                      Navigator.pushNamed(context, RoomListScreen.id);
+                    }else {
+                      Navigator.pushNamed(context, InitScreen.id);
+                    }
                   } catch (e) {
                     print(e);
                   }
